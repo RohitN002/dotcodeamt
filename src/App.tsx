@@ -31,7 +31,7 @@ function Layout() {
       {showNav && <Navbar />}
       <div className="flex">
         {showNav && <SideNav />}
-        <div className={`${showNav ? "ml-56 w-full bg-gray-100" : ""}`}>
+        <div className={`${showNav ? "ml-64 w-full bg-gray-100" : ""}`}>
           <Routes>
             <Route path="/" element={<Login />} />
             {authUser && <Route path="/dashboard" element={<Dashboard />} />}

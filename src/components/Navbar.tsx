@@ -49,7 +49,7 @@ const Navbar: React.FC = () => {
     <nav className="flex justify-between items-center bg-white px-6 py-4 shadow-sm relative">
       {/* Logo */}
       <div>
-        <img src={Rewardify} alt="Rewardify Logo" className="h-5" />
+        <img src={Rewardify} alt="Rewardify Logo" className="h-5 ms-6" />
       </div>
 
       {/* Welcome Message */}

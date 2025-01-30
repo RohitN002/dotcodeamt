@@ -7,7 +7,7 @@ import profilepng from "../assets/profilelight.png";
 const SideNav = () => {
   const store = useSelector((state: any) => state?.dashboard?.store);
   return (
-    <div className="h-[calc(100vh-4rem)] w-56 shadow-md text-white  fixed top-16 flex flex-col">
+    <div className="h-[calc(100vh-4rem)] w-64 shadow-md text-white  fixed top-16 flex flex-col">
       <nav className="flex-grow">
         {[store]?.map((store) => (
           <div className=" p-4   mx-auto mt-8 mb-4 w-48" key={store._id}>
