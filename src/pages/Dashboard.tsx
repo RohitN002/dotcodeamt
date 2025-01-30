@@ -41,7 +41,7 @@ const Dashboard = () => {
     { name: "Gift Cards", icon: giftcard },
   ];
   return (
-    <div className="p-6 bg-gray-100 min-h-screen flex gap-6">
+    <div className="p-6 bg-gray-100 min-h-screen mx-auto flex gap-6">
       {/* Left Section */}
       <div className="w-1/2  ">
         <div className="bg-white p-4 mb-10">
@@ -103,7 +103,7 @@ const Dashboard = () => {
       </div>
 
       {/* Right Section */}
-      <div className="w-1/2 bg-white p-4 rounded-2xl shadow-md">
+      <div className="w-1/3 bg-white p-4 rounded-2xl shadow-md">
         <h2 className="text-lg font-semibold mb-4">My Orders</h2>
         <div className="flex space-x-4 mb-5">
           <span className="font-bold">confirmation(6)</span>
@@ -113,7 +113,7 @@ const Dashboard = () => {
         <div className="space-y-4">
           {[1, 2].map((order) => (
             <div key={order} className="p-4 bg-gray-50 rounded-lg shadow-sm">
-              <p className="text-green-600 font-semibold">Order ID: 12345</p>
+              <p className="text-[#ACC43F] font-semibold">Order ID: 12345</p>
               <p className="text-sm text-gray-600">Date: Apr 10, 2024</p>
               <p className="font-medium">Order for: Rajesh Kannan</p>
               <p className="text-sm text-gray-500">📍 R S Puram, Coimbatore</p>
@@ -121,8 +121,9 @@ const Dashboard = () => {
                 <p>1 x Ooty Apple - ₹100.00</p>
                 <p>5 x White Egg - ₹50.00</p>
               </div>
+              <hr className="my-4 border-t-2 border-gray-300" />{" "}
               <p className="mt-2 font-bold">Total: ₹150.00</p>
-              <div className="flex gap-2 mt-3">
+              <div className="flex justify-around mt-3">
                 <button className="border-2 border-[#ACC43F] rounded-lg p-2 my-2 text-[#ACC43F]">
                   Reject Order
                 </button>
