@@ -11,6 +11,7 @@ const initialState = {
   updateSuccess: false,
   errorMessage: "",
   message: "",
+  profile: [],
 };
 
 const deviceDetails = localStorage.getItem("deviceInfo");
@@ -46,6 +47,16 @@ export const getPayments = createAsyncThunk(
   }
 );
 
+export const getProfile = createAsyncThunk("dashboard/getProfile", async () => {
+  const token = localStorage.getItem("refreshToken");
+  const response = await axios.get(`${apiUrl}/v1/store-user/store/user/`, {
+    headers: {
+      device: deviceDetails,
+      Authorization: token,
+    },
+  });
+  return response.data;
+});
 export const getSettlements = createAsyncThunk(
   "dashboard/getSettlements",
   async () => {
@@ -139,6 +150,19 @@ const dashboardSlice = createSlice({
       state.orders = action.payload;
     });
     builder.addCase(getOrders.rejected, (state, action) => {
+      state.loading = false;
+      state.errorMessage = action.error.message as string;
+    });
+    //getprofile
+    builder.addCase(getProfile.pending, (state) => {
+      state.loading = true;
+      state.errorMessage = "";
+    });
+    builder.addCase(getProfile.fulfilled, (state, action) => {
+      state.loading = false;
+      state.profile = action.payload;
+    });
+    builder.addCase(getProfile.rejected, (state, action) => {
       state.loading = false;
       state.errorMessage = action.error.message as string;
     });

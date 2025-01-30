@@ -3,6 +3,8 @@ import settlement from "../assets/settlements.png";
 import transactionhistory from "../assets/transactionhistory.png";
 import giftcard from "../assets/giftcard.png";
 import person from "../assets/person.png";
+import location from "../assets/location.png";
+import call from "../assets/call.png";
 const Dashboard = () => {
   const transactions = [
     {
@@ -113,16 +115,46 @@ const Dashboard = () => {
         <div className="space-y-4">
           {[1, 2].map((order) => (
             <div key={order} className="p-4 bg-gray-50 rounded-lg shadow-sm">
-              <p className="text-[#ACC43F] font-semibold">Order ID: 12345</p>
-              <p className="text-sm text-gray-600">Date: Apr 10, 2024</p>
-              <p className="font-medium">Order for: Rajesh Kannan</p>
-              <p className="text-sm text-gray-500">📍 R S Puram, Coimbatore</p>
+              <div className="flex justify-between">
+                <p className="text-[#ACC43F] font-semibold">Order ID: 12345</p>
+                <p className="text-sm text-gray-600">Date: Apr 10, 2024</p>
+              </div>
+              <p className="font-medium">Order for: </p>
+              <p>Rajesh Kannan</p>
+              <div className="flex">
+                <p className="flex">
+                  {" "}
+                  <img
+                    src={call}
+                    alt="call png"
+                    className="h-4 w-4  bg-[#F2F8DF] my-auto me-2"
+                  />
+                  <span className="my-auto me-4"> +91987654321</span>
+                </p>
+                <p className="text-sm flex text-gray-500">
+                  <img
+                    src={location}
+                    alt="location png"
+                    className="my-auto bg-[#F2F8DF] h-4 w-4 rounded-sm me-2"
+                  />{" "}
+                  <span className="my-auto"> R S Puram, Coimbatore</span>
+                </p>
+              </div>
               <div className="mt-2 text-gray-700">
-                <p>1 x Ooty Apple - ₹100.00</p>
-                <p>5 x White Egg - ₹50.00</p>
+                <div className="flex justify-between">
+                  <p>1 x Ooty Apple </p> <p>₹100.00</p>
+                </div>
+                <div className="flex justify-between">
+                  {" "}
+                  <p>5 x White Egg </p>
+                  <p>₹50.00</p>
+                </div>
               </div>
               <hr className="my-4 border-t-2 border-gray-300" />{" "}
-              <p className="mt-2 font-bold">Total: ₹150.00</p>
+              <div className="flex justify-between">
+                <p className="mt-2 font-bold">Total Bill amount paid </p>{" "}
+                <p> ₹150.00</p>
+              </div>
               <div className="flex justify-around mt-3">
                 <button className="border-2 border-[#ACC43F] rounded-lg p-2 my-2 text-[#ACC43F]">
                   Reject Order

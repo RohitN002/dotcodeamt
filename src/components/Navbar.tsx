@@ -4,23 +4,29 @@ import profile from "../assets/profile.png";
 import money from "../assets/money.png";
 import Rewardify from "../assets/Rewardify.png";
 
-// Define User type
-interface User {
-  name: string;
-  email: string;
-  contactNo: string;
-}
+import { getProfile } from "../redux/reducers/dashboard.reducer";
+import { useAppDispatch } from "../redux/store";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Navbar: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-  const user: User = {
-    name: "John Mat",
-    email: "john@dotcod.in",
-    contactNo: "7777777777",
+  const profiledetails = useSelector((state: any) => state?.dashboard?.profile);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const handleProfileClick = () => {
+    setIsDropdownOpen(true);
+    dispatch(getProfile());
+    console.log("profile", JSON.stringify(profiledetails));
   };
-
+  const handleLogoutClick = () => {
+    localStorage.removeItem("deviceInfo");
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    navigate("/");
+  };
+  /*  */
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -73,7 +79,8 @@ const Navbar: React.FC = () => {
               src={profile}
               alt="Profile Icon"
               className="h-6 w-6 cursor-pointer"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              onClick={handleProfileClick}
+              //   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             />
 
             {/* Dropdown */}
@@ -82,13 +89,15 @@ const Navbar: React.FC = () => {
                 ref={dropdownRef}
                 className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg p-4 text-sm border z-50"
               >
-                <p className="font-semibold text-gray-800">{user.name}</p>
-                <p className="text-gray-600">{user.email}</p>
-                <p className="text-gray-600">{user.contactNo}</p>
+                <p className="font-semibold text-gray-800">
+                  {profiledetails?.name}
+                </p>
+                <p className="text-gray-600">{profiledetails?.email}</p>
+                <p className="text-gray-600">{profiledetails?.contactNo}</p>
                 <hr className="my-2" />
                 <button
                   className="w-full text-left text-red-500 hover:text-red-700"
-                  onClick={() => alert("Logging out...")}
+                  onClick={handleLogoutClick}
                 >
                   Logout
                 </button>

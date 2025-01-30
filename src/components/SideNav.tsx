@@ -1,6 +1,9 @@
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-
+import dashboard from "../assets/dashboard.png";
+import myproducts from "../assets/myproducts.png";
+import orders from "../assets/orders.png";
+import profilepng from "../assets/profilelight.png";
 const SideNav = () => {
   const store = useSelector((state: any) => state?.dashboard?.store);
   return (
@@ -27,25 +30,24 @@ const SideNav = () => {
         ))}
         <ul className="space-y-2 mx-auto">
           <li className="bg-[#F2F8DF]  border-r-4 border-[#668D12]">
-            <Link to="/" className="block px-4 py-2 text-black">
+            <Link
+              to="/dashboard"
+              className="flex px-4 py-2 font-bold text-black "
+            >
+              <img src={dashboard} alt="dashboard" className="me-2" />
               Dashboard
             </Link>
           </li>
 
-          <li>
-            <Link to="/settings" className="block px-4 py-2  text-gray-400">
-              Orders
-            </Link>
+          <li className="flex px-4 py-2   text-gray-400">
+            <img src={orders} alt="orders" className="me-2" /> Orders
           </li>
-          <li>
-            <Link to="/logout" className="block px-4 py-2 text-gray-400">
-              My Products
-            </Link>
+          <li className="flex px-4 py-2  text-gray-400">
+            {" "}
+            <img src={myproducts} alt="profucts" className="me-2" /> My Products
           </li>
-          <li>
-            <Link to="/logout" className="block px-4 py-2 text-gray-400">
-              Profile
-            </Link>
+          <li className="flex px-4 py-2  text-gray-400">
+            <img src={profilepng} alt="profile" className="me-2" /> Profile
           </li>
         </ul>
       </nav>
