@@ -160,6 +160,7 @@ const Login = () => {
           setGetStartedVerify(true);
         }
       });
+      console.log(res);
     }
 
     if (getStartedVerify) {
@@ -185,6 +186,7 @@ const Login = () => {
           });
         });
       });
+      console.log(res);
       setGetStartedVerify(false);
       setSelectStore(true);
     }
