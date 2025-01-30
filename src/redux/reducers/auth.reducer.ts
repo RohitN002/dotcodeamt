@@ -48,7 +48,7 @@ export const generateOtp = createAsyncThunk(
 );
 export const verifyOtp = createAsyncThunk(
   "login/verifyOTP",
-  async ({ Otp }: any, { rejectWithValue }) => {
+  async ({}: any, { rejectWithValue }) => {
     try {
       // Retrieve device info from localStorage
       const deviceInfo = localStorage.getItem("deviceInfo");
