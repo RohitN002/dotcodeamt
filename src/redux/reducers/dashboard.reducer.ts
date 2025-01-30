@@ -52,7 +52,7 @@ export const getProfile = createAsyncThunk("dashboard/getProfile", async () => {
   const response = await axios.get(`${apiUrl}/v1/store-user/store/user/`, {
     headers: {
       device: deviceDetails,
-      Authorization: token,
+      Authorization: `Bearer ${token}`,
     },
   });
   return response.data;

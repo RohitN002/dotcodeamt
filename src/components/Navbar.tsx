@@ -8,11 +8,13 @@ import { getProfile } from "../redux/reducers/dashboard.reducer";
 import { useAppDispatch } from "../redux/store";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
 
 const Navbar: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const profiledetails = useSelector((state: any) => state?.dashboard?.profile);
+  const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const handleProfileClick = () => {
@@ -20,10 +22,12 @@ const Navbar: React.FC = () => {
     dispatch(getProfile());
     console.log("profile", JSON.stringify(profiledetails));
   };
+
   const handleLogoutClick = () => {
     localStorage.removeItem("deviceInfo");
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
+    enqueueSnackbar("Logout sucessful", { variant: "success" });
     navigate("/");
   };
   /*  */
@@ -87,16 +91,16 @@ const Navbar: React.FC = () => {
             {isDropdownOpen && (
               <div
                 ref={dropdownRef}
-                className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg p-4 text-sm border z-50"
+                className="absolute right-0 mt-2 w-48 bg-white shadow-sm  rounded-lg p-4 text-sm border-[#444c2b]  z-50"
               >
-                <p className="font-semibold text-gray-800">
+                <p className="font-semibold text-gray-600">
                   {profiledetails?.name}
                 </p>
                 <p className="text-gray-600">{profiledetails?.email}</p>
                 <p className="text-gray-600">{profiledetails?.contactNo}</p>
                 <hr className="my-2" />
                 <button
-                  className="w-full text-left text-red-500 hover:text-red-700"
+                  className="w-full text-left font-bold font-2xl text-[#668D12] hover:text-[#444e30]"
                   onClick={handleLogoutClick}
                 >
                   Logout

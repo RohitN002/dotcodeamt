@@ -156,10 +156,10 @@ const Dashboard = () => {
                 <p> ₹150.00</p>
               </div>
               <div className="flex justify-around mt-3">
-                <button className="border-2 border-[#ACC43F] rounded-lg p-2 my-2 text-[#ACC43F]">
+                <button className="border-2 border-[#ACC43F] w-full rounded-lg me-3 p-2 my-2 text-[#ACC43F]">
                   Reject Order
                 </button>
-                <button className="rounded-lg p-2 text-md my-2 text-white bg-gradient-to-r from-[#668D12] to-[#ACC43F]">
+                <button className="rounded-lg p-2 text-md my-2 text-white w-full bg-gradient-to-r from-[#668D12] to-[#ACC43F]">
                   Confirm Order
                 </button>
               </div>
