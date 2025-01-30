@@ -1,30 +1,50 @@
-import { ReactNode, useRef, useState, ChangeEvent, KeyboardEvent } from "react";
+import { useRef, useState, ChangeEvent, KeyboardEvent, useEffect } from "react";
 import loginbg from "../assets/loginbg.png";
 import logo from "../assets/logo.png";
-import useLoginFlow from "../hooks/useLogin";
+
+import {
+  generateOtp,
+  refreshToken,
+  verifyOtp,
+} from "../redux/reducers/auth.reducer";
+import { useAppDispatch } from "../redux/store";
+import { useSnackbar } from "notistack";
+import { useSelector } from "react-redux";
+import { getStore } from "../redux/reducers/dashboard.reducer";
+import nostorepng from "../assets/nostore.png";
+import { useNavigate } from "react-router-dom";
+
 const Login = () => {
+  const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const bgStyle = {
     backgroundImage: `url(${loginbg})`,
-    backgroundSize: "cover", // Makes the image cover the entire div
-    backgroundRepeat: "no-repeat", // Ensures no repetition
-    backgroundPosition: "center", // Centers the image
-    height: "100vh", // Full viewport height
-    width: "100vw", // Full viewport width
-    display: "flex", // Enables flexbox
-    justifyContent: "center", // Horizontally centers content
-    alignItems: "center", // Vertically centers content
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    height: "100vh",
+    width: "100vw",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   };
+  const [inputVal, setInputVal] = useState({
+    countryCode: "",
+    mobNum: "",
+  });
+  const store = useSelector((state: any) => state?.dashboard?.store);
+  console.log("store info", JSON.stringify(store));
+  const [timer, setTimer] = useState(60); //
+  const [canResend, setCanResend] = useState(false);
   const [login, setLogin] = useState<boolean>(true);
   const [getStarted, setGetStarted] = useState<boolean>(false);
   const [getStartedVerify, setGetStartedVerify] = useState<boolean>(false);
   const [noStore, setNoStore] = useState<boolean>(false);
   const [selectStore, setSelectStore] = useState<boolean>(false);
-  const handleButtonClick = () => {
-    if (login) {
-      setLogin(false), setGetStarted(true);
-    }
-  };
-  const [otp, setOtp] = useState<string[]>(["", "", "", ""]);
+
+  const OTP_LENGTH = 4; // Number of OTP boxes
+  const [otp, setOtp] = useState<string[]>(new Array(OTP_LENGTH).fill(""));
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const handleChange = (value: string, index: number) => {
     if (/^\d?$/.test(value)) {
@@ -40,9 +60,40 @@ const Login = () => {
     }
   };
 
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    } else {
+      setCanResend(true);
+    }
+  }, [timer]);
+
+  const handleResendOtp = () => {
+    setTimer(60);
+    setCanResend(false);
+
+    enqueueSnackbar("OTP sent", { variant: "success" });
+    handleVerifyClick();
+  };
+  const handleCountryCodeChange = (e: any) => {
+    setInputVal((prevState) => ({
+      ...prevState,
+      countryCode: e.target.value,
+    }));
+  };
+
+  const handleMobileNumberChange = (e: any) => {
+    setInputVal((prevState) => ({
+      ...prevState,
+      mobNum: e.target.value,
+    }));
+  };
+
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key === "Backspace" && otp[index] === "") {
-      // Move focus to the previous input on backspace
       if (index > 0) {
         inputsRef.current[index - 1]?.focus();
       }
@@ -50,6 +101,7 @@ const Login = () => {
   };
 
   const handlePaste = (e: any) => {
+    /*  */
     e.preventDefault();
     const pasteData = e.clipboardData.getData("text").slice(0, otp.length);
 
@@ -59,34 +111,125 @@ const Login = () => {
         .concat(new Array(otp.length - pasteData.length).fill(""));
       setOtp(newOtp);
 
-      // Focus the last non-empty box
       inputsRef.current[pasteData.length - 1]?.focus();
     }
   };
+
+  const handleVerifyClick = () => {
+    console.log(
+      "login:",
+      login,
+      "get started:",
+      getStarted,
+
+      "get started verify",
+      getStartedVerify,
+      "selectstore",
+      selectStore,
+      "nostore" /*  */,
+      noStore
+    );
+    if (login) {
+      setLogin(false), setGetStarted(true);
+    }
+    if (getStarted) {
+      const res: any = dispatch(
+        generateOtp({
+          dialCode: Number(inputVal.countryCode),
+          contactNo: inputVal.mobNum,
+        })
+      ).then((res: any) => {
+        console.log("res", res);
+        if (res.type == "login/getOTP/rejected") {
+          console.log("rejected called");
+          console.log("res", res.payload);
+          let errormessge = null;
+          if (res.payload?.message) {
+            errormessge = res.payload.message;
+          } else if (res?.payload) {
+            errormessge = res.payload;
+          }
+          enqueueSnackbar(errormessge, {
+            variant: "error",
+          });
+        } else if (res.type == "login/getOTP/fulfilled") {
+          console.log("sucess called");
+          console.log("res", res.payload.message); /*  */
+          enqueueSnackbar(res.payload.message, { variant: "success" });
+          setGetStarted(false);
+          setGetStartedVerify(true);
+        }
+      });
+    }
+
+    if (getStartedVerify) {
+      console.log("getstaretedverify");
+      const otpNumber = Number(otp.join(""));
+      console.log(otpNumber);
+      const res = dispatch(verifyOtp(otpNumber)).then((res: any) => {
+        console.log("otp res", res.payload);
+        console.log("token", res.payload.token);
+        console.log("refresh token", res.payload.refreshToken);
+        localStorage.setItem("token", res?.payload?.token);
+        localStorage.setItem("refreshToken", res?.payload?.refreshToken);
+        dispatch(refreshToken()).then((res: any) => {
+          console.log("refreshtoken", res.payload.token);
+          localStorage.setItem("refreshToken", res?.payload?.token);
+          dispatch(getStore()).then((res: any) => {
+            console.log("storeDetails", res);
+            if (res && Object.keys(res).length > 0) {
+              setSelectStore(true);
+            } else {
+              setNoStore(true);
+            }
+          });
+        });
+      });
+      setGetStartedVerify(false);
+      setSelectStore(true);
+    }
+    if (selectStore) {
+      console.log("store called");
+      navigate("/dashboard");
+    }
+  };
+
   return (
     <div style={bgStyle}>
       <div className="bg-white rounded-lg shadow-lg max-w-md w-full flex flex-col justify-center items-center">
         <div className=" text-center p-5">
-          {(login || getStarted || getStartedVerify) && (
-            <img src={logo} alt="logo" className="mx-auto h-15 w-15 mt-4" />
+          {(login || getStarted || getStartedVerify || noStore) && (
+            <img
+              src={noStore ? `${nostorepng}` : `${logo}`}
+              alt="logo"
+              className="mx-auto h-15 w-15 mt-4"
+            />
           )}
 
-          <p className="text-black text-3xl p-7 font-bold">
+          <p className="text-black text-3xl px-7 font-bold">
             {login
               ? "Grow your Business Exponentially!"
               : getStarted
               ? "Get started with REWARDIFY"
               : getStartedVerify
               ? "Verify your details"
+              : noStore
+              ? "No stores are linked to this account"
+              : store
+              ? "Select Your Store"
               : ""}
           </p>
-          <p className="text-gray-400  text-sm">
+          <p className="text-gray-400 my-4 px-20 text-sm">
             {login
               ? " Pay less on each transaction you make with our App."
               : getStarted
               ? "Enter your mobile number or Shop ID to get started"
               : getStartedVerify
               ? "Enter OTP number below"
+              : noStore
+              ? "Enter your account details correctly or register your store with us"
+              : store
+              ? "Your Number is connect with our store"
               : ""}
           </p>
           {login && (
@@ -98,24 +241,80 @@ const Login = () => {
               </div>{" "}
             </>
           )}
+          {selectStore &&
+            [store]?.map((store) => (
+              <div
+                className="flex p-4 border rounded-lg shadow-sm mx-auto  mb-4 w-64"
+                key={store._id}
+              >
+                {/* Image Section */}
+                <img
+                  src={store?.images[0]}
+                  alt="Store Image"
+                  className="w-24 h-24 object-cover mr-4"
+                />
+
+                {/* Store Details Section */}
+                <div className="flex flex-col justify-between">
+                  {/* Store Name */}
+                  <h2 className="text-xl font-semibold">{store?.name}</h2>
+
+                  {/* Location */}
+                  <p className="text-sm text-gray-600">{`${store?.location[0]}, ${store?.location[1]}`}</p>
+
+                  {/* Store ID */}
+                  <p className="text-sm text-gray-500">
+                    Store ID: {store?.storeId}
+                  </p>
+                </div>
+              </div>
+            ))}
           {(login || noStore || selectStore) && (
             <>
               <button
                 className="rounded-lg p-2 text-xl my-2 text-white w-full bg-gradient-to-r from-[#668D12] to-[#ACC43F]"
                 // optional if you want to set the text color as well
-                onClick={handleButtonClick}
+                onClick={handleVerifyClick}
               >
-                Login
+                {login
+                  ? "Login"
+                  : noStore
+                  ? "Register your Store with US"
+                  : store
+                  ? "Continue"
+                  : ""}
               </button>
             </>
           )}
           {getStarted && (
-            <input
-              type="text"
-              placeholder="Enter shop ID / Mobile Number"
-              className="text-gray-400 rounded-md w-full p-3 border-2 border-gray-300 mt-5 "
-            />
+            <div className="flex items-center">
+              {/* Country Code Dropdown */}
+              <select
+                value={inputVal.countryCode}
+                onChange={handleCountryCodeChange}
+                className="p-3 border-2 border-gray-300 rounded-l-md bg-white text-gray-500 me-2"
+              >
+                <option value="" disabled>
+                  country code
+                </option>
+                <option value="1">+1 (US)</option>
+                <option value="44">+44 (UK)</option>
+                <option value="91">+91 (India)</option>
+                <option value="61">+61 (Australia)</option>
+                <option value="81">+81 (Japan)</option>
+              </select>
+
+              {/* Mobile Number Input */}
+              <input
+                type="text"
+                value={inputVal.mobNum}
+                onChange={handleMobileNumberChange}
+                placeholder="Enter Mobile Number"
+                className="text-gray-400 rounded-r-md w-full p-3 border-2 border-gray-300"
+              />
+            </div>
           )}
+
           {getStartedVerify && (
             <div className="flex gap-2 justify-center items-center">
               {otp.map((digit, index) => (
@@ -137,26 +336,29 @@ const Login = () => {
               ))}
             </div>
           )}
-          <button
-            className={`p-2 w-full my-1 text-xl  rounded-lg  ${
-              getStarted
-                ? "bg-gray-200 font-bold text-gray-500 border-gray-300 mt-12"
-                : noStore || login
-                ? "border-2"
-                : ""
-            }`}
-            style={{
-              borderColor: login || noStore ? "#ACC43F" : "",
-            }}
-          >
-            {login
-              ? "Contact Us"
-              : getStarted
-              ? "Send OTP"
-              : getStartedVerify
-              ? "Verify and Continue"
-              : "Login With Diffrent Account"}
-          </button>
+          {(login || getStarted || getStartedVerify || noStore) && (
+            <button
+              className={`p-2 w-full my-1 text-xl  rounded-lg  ${
+                getStarted || getStartedVerify
+                  ? "bg-gray-200 font-bold w-full text-gray-500 border-gray-300 mt-12"
+                  : noStore || login
+                  ? "border-2"
+                  : ""
+              }`}
+              onClick={handleVerifyClick}
+              style={{
+                borderColor: login || noStore ? "#ACC43F" : "",
+              }}
+            >
+              {login
+                ? "Contact Us"
+                : getStarted
+                ? "Send OTP"
+                : getStartedVerify
+                ? "Verify and Continue"
+                : "Login With Diffrent Account"}
+            </button>
+          )}
 
           {login || getStarted ? (
             <>
@@ -168,7 +370,19 @@ const Login = () => {
             </>
           ) : getStartedVerify ? (
             <>
-              <h3>helo</h3>
+              <p className="mt-2 text-sm text-gray-600">
+                Didn't receive OTP?{" "}
+                {canResend ? (
+                  <span
+                    onClick={handleResendOtp}
+                    className="text-blue-500 cursor-pointer font-semibold"
+                  >
+                    Resend
+                  </span>
+                ) : (
+                  `Resend in ${timer}s`
+                )}
+              </p>
             </>
           ) : (
             ""
