@@ -4,13 +4,13 @@ import { Link } from "react-router-dom";
 const SideNav = () => {
   const store = useSelector((state: any) => state?.dashboard?.store);
   return (
-    <div className="h-[calc(100vh-4rem)] w-52 shadow-md text-white  fixed top-16 flex flex-col">
+    <div className="h-[calc(100vh-4rem)] w-56 shadow-md text-white  fixed top-16 flex flex-col">
       <nav className="flex-grow">
         {[store]?.map((store) => (
           <div className=" p-4   mx-auto mt-8 mb-4 w-48" key={store._id}>
             {/* Image Section */}
             <img
-              src={store?.images[0]}
+              src={store?.images}
               alt="Store Image"
               className="w-24 h-24 object-cover mr-4"
             />
@@ -26,7 +26,7 @@ const SideNav = () => {
           </div>
         ))}
         <ul className="space-y-2 mx-auto">
-          <li className="bg-[#D4E68A]  border-r-4 border-[#668D12]">
+          <li className="bg-[#F2F8DF]  border-r-4 border-[#668D12]">
             <Link to="/" className="block px-4 py-2 text-black">
               Dashboard
             </Link>

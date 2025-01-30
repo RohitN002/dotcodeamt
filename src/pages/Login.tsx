@@ -246,15 +246,19 @@ const Login = () => {
           {selectStore &&
             [store]?.map((store) => (
               <div
-                className="flex p-4 border rounded-lg shadow-sm mx-auto  mb-4 w-64"
+                className="flex p-4 border rounded-lg shadow-sm mx-auto mb-4 w-64"
                 key={store._id}
               >
                 {/* Image Section */}
-                <img
-                  src={store?.images[0]}
-                  alt="Store Image"
-                  className="w-24 h-24 object-cover mr-4"
-                />
+                {store?.images?.[0] ? (
+                  <img
+                    src={store?.images}
+                    alt="Store Image"
+                    className="w-24 h-24 object-cover mr-4"
+                  />
+                ) : (
+                  <div className="w-24 h-24 bg-gray-300 mr-4" /> // Placeholder if image is unavailable
+                )}
 
                 {/* Store Details Section */}
                 <div className="flex flex-col justify-between">
@@ -262,7 +266,7 @@ const Login = () => {
                   <h2 className="text-xl font-semibold">{store?.name}</h2>
 
                   {/* Location */}
-                  <p className="text-sm text-gray-600">{`${store?.location[0]}, ${store?.location[1]}`}</p>
+                  <p className="text-sm text-gray-600">{store.location}</p>
 
                   {/* Store ID */}
                   <p className="text-sm text-gray-500">
@@ -271,6 +275,7 @@ const Login = () => {
                 </div>
               </div>
             ))}
+
           {(login || noStore || selectStore) && (
             <>
               <button
