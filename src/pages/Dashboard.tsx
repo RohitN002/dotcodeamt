@@ -45,7 +45,7 @@ const Dashboard = () => {
   return (
     <div className="p-6 bg-gray-100 min-h-screen mx-auto flex gap-6">
       {/* Left Section */}
-      <div className="w-1/2  ">
+      <div className="w-[42%] ms-18 ">
         <div className="bg-white p-4 mb-10">
           <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
           <div className="grid grid-cols-4 gap-1 mb-6">
@@ -105,7 +105,7 @@ const Dashboard = () => {
       </div>
 
       {/* Right Section */}
-      <div className="w-1/3 bg-white p-4 rounded-2xl shadow-md">
+      <div className="w-[42%]  bg-white p-4 rounded-2xl shadow-md">
         <h2 className="text-lg font-semibold mb-4">My Orders</h2>
         <div className="flex space-x-4 mb-5">
           <span className="font-bold">confirmation(6)</span>
