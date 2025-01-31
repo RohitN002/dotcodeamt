@@ -177,7 +177,7 @@ const Login = () => {
         ...prev,
         otp: otpNumber,
       }));
-      const res = dispatch(verifyOtp(inputVal)).then((res: any) => {
+      const res = dispatch(verifyOtp(otpNumber)).then((res: any) => {
         console.log("otp res", res.payload);
         console.log("token", res.payload.token);
         console.log("refresh token", res.payload.refreshToken);
