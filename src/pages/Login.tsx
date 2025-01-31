@@ -187,44 +187,56 @@ const Login = () => {
           otp: otpNumber,
         })
       ).then((res: any) => {
-        // console.log("otp res", res.payload);
-        // console.log("token", res.payload.token);
-        // console.log("refresh token", res.payload.refreshToken);
-        localStorage.setItem("token", res?.payload?.token);
-        localStorage.setItem("refreshToken", res?.payload?.refreshToken);
-        dispatch(refreshToken()).then((res: any) => {
-          // console.log("refreshtoken", res.payload.token);
-          localStorage.setItem("refreshToken", res?.payload?.token);
-          dispatch(getStore()).then((res: any) => {
-            console.log("storeDetails", res.payload);
+        console.log("verify otp response type", res.type);
+        if (res.type == "login/verifyOTP/fulfilled") {
+          localStorage.setItem("token", res?.payload?.token);
+          localStorage.setItem("refreshToken", res?.payload?.refreshToken);
+          dispatch(refreshToken()).then((res: any) => {
+            // console.log("refreshtoken", res.payload.token);
+            localStorage.setItem("refreshToken", res?.payload?.token);
+            dispatch(getStore()).then((res: any) => {
+              console.log("storeDetails", res.payload);
 
-            if (res.type == "dashboard/getStore/fulfilled") {
-              if (res && Object.keys(res).length > 0) {
-                setGetStartedVerify(false);
-                setSelectStore(true);
-                enqueueSnackbar("Verification success", { variant: "success" });
-              } else {
-                setGetStartedVerify(false);
-                setNoStore(true);
-                enqueueSnackbar("No store found in your mobile number", {
+              if (res.type == "dashboard/getStore/fulfilled") {
+                if (res && Object.keys(res).length > 0) {
+                  setGetStartedVerify(false);
+                  setSelectStore(true);
+                  enqueueSnackbar("Verification success", {
+                    variant: "success",
+                  });
+                } else {
+                  setGetStartedVerify(false);
+                  setNoStore(true);
+                  enqueueSnackbar("No store found in your mobile number", {
+                    variant: "error",
+                  });
+                }
+              } else if (res.type == "dashboard/getStore/rejected") {
+                let errormessge = null;
+                if (res.payload?.message) {
+                  errormessge = res.payload.message;
+                } else if (res?.payload) {
+                  errormessge = res.payload;
+                } else {
+                  errormessge = "An error occured please try again ";
+                }
+                enqueueSnackbar(errormessge, {
                   variant: "error",
                 });
               }
-            } else if (res.type == "dashboard/getStore/rejected") {
-              let errormessge = null;
-              if (res.payload?.message) {
-                errormessge = res.payload.message;
-              } else if (res?.payload) {
-                errormessge = res.payload;
-              } else {
-                errormessge = "An error occured please try again ";
-              }
-              enqueueSnackbar(errormessge, {
-                variant: "error",
-              });
-            }
+            });
           });
-        });
+        } else if (res.type == "dashboard/getStore/rejected") {
+          let errormessge = null;
+          if (res.payload?.message) {
+            errormessge = res.payload.message;
+          } else if (res?.payload) {
+            errormessge = res.payload;
+          } else {
+            errormessge = "An error occured please try again ";
+          }
+          enqueueSnackbar(errormessge, { variant: "error" });
+        }
       });
       console.log(res);
     }
