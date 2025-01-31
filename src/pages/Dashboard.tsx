@@ -5,7 +5,9 @@ import giftcard from "../assets/giftcard.png";
 import person from "../assets/person.png";
 import location from "../assets/location.png";
 import call from "../assets/call.png";
+import { useState } from "react";
 const Dashboard = () => {
+  const [view, setView] = useState("transactions");
   const transactions = [
     {
       name: "+91234563535",
@@ -42,6 +44,38 @@ const Dashboard = () => {
     { name: "Transaction History", icon: transactionhistory },
     { name: "Gift Cards", icon: giftcard },
   ];
+  const settlements = [
+    {
+      name: "Michael Lee",
+      action: "settled",
+      date: "Feb 5, 2024",
+      method: "PayPal",
+      amount: "$400",
+    },
+    {
+      name: "Emma Brown",
+      action: "cleared",
+      date: "Feb 7, 2024",
+      method: "UPI",
+      amount: "$250",
+    },
+    {
+      name: "Michael Lee",
+      action: "settled",
+      date: "Feb 5, 2024",
+      method: "PayPal",
+      amount: "$400",
+    },
+    {
+      name: "Emma Brown",
+      action: "cleared",
+      date: "Feb 7, 2024",
+      method: "UPI",
+      amount: "$250",
+    },
+  ];
+
+  const dataToShow = view === "transactions" ? transactions : settlements;
   return (
     <div className="p-6 bg-gray-100 min-h-screen mx-auto flex gap-6">
       {/* Left Section */}
@@ -66,37 +100,52 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-6">Recent Transactions</h2>
+          <h2 className="text-xl font-semibold mb-6">Recent {view}</h2>
+          <div className="flex text-gray-600 mb-4">
+            <span
+              className={`mr-5  cursor-pointer ${
+                view === "transactions"
+                  ? "text-black font-bold"
+                  : "text-gray-400"
+              }`}
+              onClick={() => setView("transactions")}
+            >
+              All Transactions
+            </span>
+            <span
+              className={`cursor-pointer ${
+                view === "settlements"
+                  ? "text-black font-bold"
+                  : "text-gray-400"
+              }`}
+              onClick={() => setView("settlements")}
+            >
+              Settlements
+            </span>
+          </div>
+
           <div className="space-y-4">
-            <div className="flex text-gray-600">
-              <span className="mr-5 font-bold">All transactions</span>
-              <span className="text-gray-400"> settlements</span>
-            </div>
-            {transactions.map((transaction, index) => (
+            {dataToShow.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg "
+                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
               >
                 <div className="flex items-center space-x-4">
                   <img
                     src={person}
                     alt="Person"
-                    className="w-7 h-7 bg-[#F2F8DF]  rounded-full"
+                    className="w-7 h-7 bg-[#F2F8DF] rounded-full"
                   />
                   <div>
                     <p className="font-semibold">
-                      {transaction.name} {transaction.action}
+                      {item.name} {item.action}
                     </p>
-                    <p className="text-sm text-gray-500">
-                      Paid on {transaction.date}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {transaction.method}
-                    </p>
+                    <p className="text-sm text-gray-500">Paid on {item.date}</p>
+                    <p className="text-sm text-gray-500">{item.method}</p>
                   </div>
                 </div>
                 <div className="text-green-500 font-semibold">
-                  {transaction.amount}
+                  {item.amount}
                 </div>
               </div>
             ))}

@@ -41,7 +41,7 @@ const Login = () => {
     otp: null,
   });
   const store = useSelector((state: any) => state?.dashboard?.store);
-  console.log("store info", JSON.stringify(store));
+
   const [timer, setTimer] = useState(60); //
   const [canResend, setCanResend] = useState(false);
   const [login, setLogin] = useState<boolean>(true);
@@ -177,28 +177,52 @@ const Login = () => {
         ...prev,
         otp: otpNumber,
       }));
-      const res = dispatch(verifyOtp(otpNumber)).then((res: any) => {
-        console.log("otp res", res.payload);
-        console.log("token", res.payload.token);
-        console.log("refresh token", res.payload.refreshToken);
+      const res = dispatch(
+        verifyOtp({
+          dialCode: inputVal.countryCode,
+          contactNo: inputVal.mobNum,
+          type: inputVal.type,
+          otp: otpNumber,
+        })
+      ).then((res: any) => {
+        // console.log("otp res", res.payload);
+        // console.log("token", res.payload.token);
+        // console.log("refresh token", res.payload.refreshToken);
         localStorage.setItem("token", res?.payload?.token);
         localStorage.setItem("refreshToken", res?.payload?.refreshToken);
         dispatch(refreshToken()).then((res: any) => {
-          console.log("refreshtoken", res.payload.token);
+          // console.log("refreshtoken", res.payload.token);
           localStorage.setItem("refreshToken", res?.payload?.token);
           dispatch(getStore()).then((res: any) => {
-            console.log("storeDetails", res);
-            if (res && Object.keys(res).length > 0) {
-              setSelectStore(true);
-            } else {
-              setNoStore(true);
+            console.log("storeDetails", res.payload);
+
+            if (res.type == "dashboard/getStore/fulfilled") {
+              if (res && Object.keys(res).length > 0) {
+                setGetStartedVerify(false);
+                setSelectStore(true);
+                enqueueSnackbar("Verification success", { variant: "success" });
+              } else {
+                setGetStartedVerify(false);
+                setNoStore(true);
+                enqueueSnackbar("No store found in your mobile number", {
+                  variant: "error",
+                });
+              }
+            } else if (res.type == "dashboard/getStore/rejected") {
+              let errormessge = null;
+              if (res.payload?.message) {
+                errormessge = res.payload.message;
+              } else if (res?.payload) {
+                errormessge = res.payload;
+              }
+              enqueueSnackbar(errormessge, {
+                variant: "error",
+              });
             }
           });
         });
       });
       console.log(res);
-      setGetStartedVerify(false);
-      setSelectStore(true);
     }
     if (selectStore) {
       console.log("store called");

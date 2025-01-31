@@ -48,7 +48,7 @@ export const generateOtp = createAsyncThunk(
 );
 export const verifyOtp = createAsyncThunk(
   "login/verifyOTP",
-  async ({}: any, { rejectWithValue }) => {
+  async ({ dialCode, contactNo, type, otp }: any, { rejectWithValue }) => {
     try {
       // Retrieve device info from localStorage
       const deviceInfo = localStorage.getItem("deviceInfo");
@@ -56,14 +56,14 @@ export const verifyOtp = createAsyncThunk(
       const headers = {
         device: deviceInfo ? deviceInfo : "{}",
       };
-
+      console.log("verifyotp", dialCode, contactNo, type, otp);
       const response = await axios.post(
         `${apiUrl}/v1/store-user/auth/login`,
         {
-          dialCode: 91,
-          contactNo: "7777777777",
-          type: 1,
-          otp: 1234,
+          dialCode,
+          contactNo,
+          type,
+          otp,
         },
 
         { headers }
