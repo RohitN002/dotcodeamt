@@ -220,6 +220,8 @@ const Login = () => {
               enqueueSnackbar(errormessge, {
                 variant: "error",
               });
+              setGetStartedVerify(false);
+              setGetStarted(true);
             }
           });
         });
