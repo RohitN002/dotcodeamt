@@ -29,9 +29,16 @@ const Login = () => {
     justifyContent: "center",
     alignItems: "center",
   };
-  const [inputVal, setInputVal] = useState({
+  const [inputVal, setInputVal] = useState<{
+    countryCode: string;
+    mobNum: string;
+    type: number;
+    otp: number | null;
+  }>({
     countryCode: "",
     mobNum: "",
+    type: 1,
+    otp: null,
   });
   const store = useSelector((state: any) => state?.dashboard?.store);
   console.log("store info", JSON.stringify(store));
@@ -166,8 +173,11 @@ const Login = () => {
     if (getStartedVerify) {
       console.log("getstaretedverify");
       const otpNumber = Number(otp.join(""));
-      console.log(otpNumber);
-      const res = dispatch(verifyOtp(otpNumber)).then((res: any) => {
+      setInputVal((prev) => ({
+        ...prev,
+        otp: otpNumber,
+      }));
+      const res = dispatch(verifyOtp(inputVal)).then((res: any) => {
         console.log("otp res", res.payload);
         console.log("token", res.payload.token);
         console.log("refresh token", res.payload.refreshToken);
