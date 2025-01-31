@@ -214,6 +214,8 @@ const Login = () => {
                 errormessge = res.payload.message;
               } else if (res?.payload) {
                 errormessge = res.payload;
+              } else {
+                errormessge = "An error occured please try again ";
               }
               enqueueSnackbar(errormessge, {
                 variant: "error",
