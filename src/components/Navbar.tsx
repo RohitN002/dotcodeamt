@@ -46,7 +46,7 @@ const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <nav className="flex justify-between items-center bg-white px-6 py-4 shadow-sm relative">
+    <nav className="flex justify-between items-center bg-white px-6 py-4 shadow-sm sticky top-0 z-50">
       {/* Logo */}
       <div>
         <img src={Rewardify} alt="Rewardify Logo" className="h-5 ms-6" />
